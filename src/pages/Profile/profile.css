@@ -1,0 +1,127 @@
+.container{
+    display: flex;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+    padding: 0.8em;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+.label-avatar{
+    width: 280px;
+    height: 280px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.label-avatar input{
+    display: none;
+}
+
+.label-avatar span{
+    z-index: 99;
+    position: absolute;
+    opacity: 0.7;
+    transition: all 0.5s;
+}
+
+.label-avatar span:hover{
+    opacity: 1;
+    transform: scale(1.4);
+}
+
+.form-profile img{
+    margin-bottom: 1em;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.form-profile label{
+    margin-bottom: 0.5em;
+    font-size: 1em;
+}
+
+.form-profile input, textarea, select{
+    margin-bottom: 0.8em;
+    padding: 0.7em;
+    border: 1;
+    border-color: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    max-width: 600px;
+    transition: ease-in-out 0.3s;
+}
+
+.form-profile input:hover, textarea:hover, select:hover{
+    border-color: rgba(0, 0, 0, 0.5);
+    transform: scale(1);
+}
+
+.form-profile input:disabled{
+    cursor: not-allowed;
+}
+
+.form-profile button:disabled{
+    cursor: not-allowed;
+}
+
+.form-profile button{
+    max-width: 600px;
+}
+
+.buttons{
+    display: flex;
+    justify-content: right;
+}
+
+.btn-salvar{
+    padding: 8px 15px;
+    width: 150px;
+    background-color: #181c2e;
+    color: #FFF;
+    border-radius: 5px;
+    font-size: 1.2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0;
+    margin-right: 0.7em;
+    transition: ease-in-out 0.3s;
+}
+
+.form-profile button:hover{
+    background-color: #43518c;
+    transform: scale(1.1);
+}
+
+.btn-salvar svg{
+    margin-right: 5px;
+}
+
+.btn-cancelar{
+    padding: 8px 20px;
+    border: 1px solid #121212;
+    width: 150px;
+    background-color: transparent;
+    border-radius: 5px;
+    font-size: 1.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #181c2e;
+}
+
+.btn-excluir{
+    padding: 5px 10px;
+    border: 0px;
+    width: 100px;
+    background-color: #FF0000;
+    border-radius: 5px;
+    font-size: 1.2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #FFF;
+}

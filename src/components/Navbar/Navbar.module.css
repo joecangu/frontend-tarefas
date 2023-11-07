@@ -1,0 +1,75 @@
+.navbar{
+    display: flex;
+    box-shadow: rgba(0, 0, 0, .15) 0px -2px 10px 0px;
+    justify-content: space-between;
+    align-items: center;
+    padding: .5em 2em;
+}
+
+.brand{
+    font-size: 1.2em;
+}
+
+.brand span{
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.links_list{
+    display: flex;
+    list-style: none;
+}
+
+.links_list svg{
+    margin-right: 3px;
+}
+
+.links_list {
+    margin-right: 1em;
+}
+
+.links_list li a{
+    padding: .4em .6em;
+}
+
+.active {
+    background-color: rgba(4, 59, 92, 1);
+    color: #fff;
+    width: 180px;
+}
+
+.navbar img{
+    margin-bottom: 1em;
+    border-radius: 50%;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown button {
+    display: flex;
+    align-items: center;
+}
+
+.menu {
+    position: absolute;
+    list-style-type: none;
+    margin: 5px 0;
+    padding: 0;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+}
+
+.menu > li {
+    width: 180px;
+    height: 30px;
+    display: flex;
+    justify-content: left;
+    text-align: center;
+    align-items: center;
+}
+
+.menu > li:hover {
+    background-color: rgba(4, 59, 92, 1);
+}

@@ -1,0 +1,28 @@
+.consultar{
+    border: 2px solid #EFEFEF;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    padding: 2px 20px;
+}
+
+.consultar button{
+  background-color: rgba(4, 59, 92, 1);
+  color: #FFF;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 5px;
+  /* width: 120px; */
+  font-weight: bold;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1em;
+  display: flex;
+  align-items: left;
+  margin-bottom: 1em;
+  margin-top: 1em;
+}
+
+.consultar button:hover{
+  background-color: rgba(4, 19, 92, 1);
+  color: #FFF;
+}
