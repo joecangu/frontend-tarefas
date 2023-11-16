@@ -124,7 +124,6 @@ button[disabled] {
   text-align: center;
   cursor: pointer;
   border-radius: 5px;
-  /* width: 120px; */
   font-weight: bold;
   border: none;
   padding: 10px 15px;
@@ -203,4 +202,51 @@ button[disabled] {
 .btn-search:hover{
   background-color: rgba(4, 59, 92, 1);
   color: #FFF;
+}
+
+.btn-reload{
+  background-color: #FFF !important;
+  color: rgba(4, 59, 92, 1) !important;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+  border: 1px solid rgba(4, 59, 92, 1) !important;
+  padding: 10px 15px;
+  font-size: 1em;
+  display: flex;
+  align-items: left;
+  margin-bottom: 1em;
+  margin-top: 1em;
+}
+
+.btn-reload:hover{
+  background-color: #FFF !important;
+  color: rgba(4, 19, 92, 1) !important;
+}
+
+.align-buttons{
+  display: flex;
+  flex-direction: row;
+}
+
+.btn-clear{
+  background-color: #FFF !important;
+  color: #AB303B !important;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+  border: 1px solid #AB303B !important;
+  padding: 10px 15px;
+  font-size: 1em;
+  display: flex;
+  align-items: left;
+  margin-bottom: 1em;
+  margin-top: 1em;
+}
+
+.btn-clear:hover{
+  background-color: #FFF !important;
+  color: #AB303B !important;
 }

@@ -34,7 +34,7 @@ import { Tooltip } from 'react-tooltip'
 
 // FORMATAR DATAS
 import { format } from 'date-fns';
-import { FaTasks } from "react-icons/fa";
+import { FaTasks, FaRedo, FaBroom } from "react-icons/fa";
 
 export default function Tarefas(){
   
@@ -86,8 +86,15 @@ export default function Tarefas(){
   const [tagsSelected, setTagsSelected] = useState(0);
   const [idTagsSelecionado, setIdTagsSelecionado] = useState(1);
 
+  // VARIAVEL PARA MOSTRAR FERIADO
+  const [checkFeriado, setCheckFeriado] = useState(false);
+
   // VARIAVEL DA PAGINAÇÃO
   const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
+
+
+  // VARIAVEL DE MONITORAÇÃO
+  const [count, setCount] = useState(0);
 
   // MONTA A TELA QUANDO INICIA
   useEffect(() => {
@@ -138,7 +145,8 @@ export default function Tarefas(){
     loadTarefas();
     carregarTags();
     consultarFeriados();
-  }, []);
+  }, [count]);
+
 
   // CONSULTA AS TAREFAS
   async function consultaTarefas(consulta){
@@ -154,7 +162,7 @@ export default function Tarefas(){
           id: doc.id,
           titulo: doc.titulo,
           descricao: doc.descricao,
-          data: doc.data,
+          data: format(new Date(doc.data.replace(/-/g, '/')), 'dd/MM/yyyy'),
           hora: doc.hora,
           tag_id: doc.tag_id,
           tags: doc.tags,
@@ -185,7 +193,7 @@ export default function Tarefas(){
       feriado.forEach((doc) => {
         listaCompleta.push({
           id: doc.date,
-          data: doc.date,
+          data: format(new Date(doc.date.replace(/-/g, '/')), 'dd/MM/yyyy'),
           titulo: doc.localName,
           descricao: null,
           hora: '',
@@ -202,7 +210,7 @@ export default function Tarefas(){
       setFeriados(listaFeriados);
       setTarefas(listaCompleta);
     }).catch((err) => {
-      console.error("Ops! ocorreu um erro" + err);
+      // console.error("Ops! ocorreu um erro" + err);
       // toast.error("Erro ao buscar os feriados!");
       setFeriados([]);
     });
@@ -212,7 +220,7 @@ export default function Tarefas(){
   const columns = [
     {
       name: 'Data e Hora',
-      selector: row => format(new Date(row.data.replace(/-/g, '/')), 'dd/MM/yyyy') + ' ' + row.hora,
+      selector: row => row.data  + ' ' + row.hora,
       sortable: true,
     },
     {
@@ -269,16 +277,13 @@ export default function Tarefas(){
 
   // FUNÇÃO DE ABRIR MODAL E PASSAR OS PARAMETROS PARA EDIÇÃO
   function handleEdit(item){
-
-    // FORMATA A DATA PARA O PADRÃO DD/MM/YYYY
-    let dataFormat = format(new Date(item.data.replace(/-/g, '/')), 'dd/MM/yyyy');
-    
+        
     // SETA OS VALORES NAS VARIAVEIS DE ESTADO
     setModal(!modal);
     setEditar(item);
     setTituloEdit(item.titulo);
     setDescricaoEdit(item.descricao);
-    setDataTarefaEdit(dataFormat);
+    setDataTarefaEdit(item.data);
     setHoraTarefaEdit(item.hora);
     setTempoDuracaoEdit(item.tempo_duracao);
     setTagsSelected(item.tag_id);
@@ -287,11 +292,9 @@ export default function Tarefas(){
 
   // FUNÇÃO DE ABRIR MODAL E PASSAR OS PARAMETROS PARA EDIÇÃO
   function handleEditTag(item){
-    
     setModalTag(!modalTag);
     setTagsSelected(item.tag_id);
     setIdTarefa(item.id);
-
   }
 
   // FUNÇÃO PARA ABRIR MODAL E PASSAR PARAMETRO PARA EXCLUSÃO
@@ -328,8 +331,12 @@ export default function Tarefas(){
     },
     config
     ).then((val) =>{
-
+          
       let tarefasReq = val.data.data.original.data;
+
+      tarefas.push(tarefasReq);
+
+      let countTarefas = tarefas.length + 1;
 
       // VOLTA OS CAMPOS PROS VALORES INICIAIS
       setTitulo('');
@@ -338,9 +345,10 @@ export default function Tarefas(){
       setHoraTarefa('');
       setTagsSelected(0);
       setTempoDuracao('');
-      setTarefas(tarefasReq);
+      setTarefas(tarefas);
+      setCount(countTarefas);
       setModal(false);
-
+      
       // MENSAGEM DE SUCESSO
       toast.success(val.data.msg);
     }).catch((err) => {
@@ -354,7 +362,7 @@ export default function Tarefas(){
   // FUNÇÃO DE ALTERAR TODOS OS CAMPOS DA TAREFA
   async function handleUpdate(e){
     e.preventDefault();
-
+    
     // ALTERA OS DADOS DO USUÁRIO
     await api.put(`/tarefas/${idTarefa}`,{
       titulo: tituloEdit,
@@ -369,6 +377,9 @@ export default function Tarefas(){
 
       let tarefasReq = val.data.data.original.data;
 
+      let countTarefas = tarefas.length + 2;
+      setCount(countTarefas);
+      
       // VOLTA OS CAMPOS PROS VALORES INICIAIS
       setTituloEdit('');
       setDescricaoEdit('');
@@ -376,7 +387,7 @@ export default function Tarefas(){
       setHoraTarefaEdit('');
       setTagsSelected(0);
       setTempoDuracaoEdit('');
-      setTarefas(tarefasReq);
+      setTarefas(tarefas);
       setModal(false);
       setIdTarefa(null);
 
@@ -404,9 +415,11 @@ export default function Tarefas(){
 
       let tarefasReq = val.data.data.original.data;
 
+      let countTarefas = tarefas.length + 1;
+      setCount(countTarefas);
       // VOLTA OS CAMPOS PROS VALORES INICIAIS
       setTagsSelected(0);
-      setTarefas(tarefasReq);
+      setTarefas(tarefas);
       setModalTag(false);
       setIdTarefa(null);
 
@@ -425,18 +438,23 @@ export default function Tarefas(){
   async function handleDeleteData(e){
     e.preventDefault();
 
+    var tarefinhas = tarefas.splice(deleteData, 1);
+    
     await api.delete(`/tarefas/${idTarefa}`,
     config
     ).then((val)=>{
 
       let tarefaReq = val.data.data.original.data;
+
+      let countTarefas = tarefas.length - 1;
+      setCount(countTarefas);
       
       // RETORNA VARIÁVEIS PARA O VALOR INICIAL
-      setTarefas(tarefaReq);
+      setTarefas(tarefas);
       setIdTarefa(null);
       setDeleteData('');
       setModalDelete(false);
-
+      
       // MENSAGEM DE SUCESSO
       toast.success(val.data.msg);
 
@@ -452,33 +470,60 @@ export default function Tarefas(){
   async function handlePesquisar(e){
     e.preventDefault();
 
-    // ALTERA OS DADOS DO USUÁRIO
-    await api.post(`/tarefas-consulta/`,{
-      titulo: tituloPesquisa ? tituloPesquisa : '',
-      data: dataTarefaPesquisa ? dataTarefaPesquisa : '',
-      data_tarefa_inicio: dataTarefaInicioPesquisa ? dataTarefaInicioPesquisa : '',
-      data_tarefa_final: dataTarefaFinalPesquisa ? dataTarefaFinalPesquisa : '',
-      tag_id: checked ? checked : '',
-      mes: mesSelected ? mesSelected : ''
-    },
-    config
-    ).then((response) =>{
-      let tarefasReq = response.data.data;
+    // VERIFICA SE O MOSTRAR FERIADO ESTÁ CHECKADO
+    if (checkFeriado === true){ 
 
-      // VOLTA OS CAMPOS PARA OS VALORES INICIAIS
-      setTarefas(tarefasReq);
-      setTituloPesquisa('');
-      setDataTarefaPesquisa('');
-      setDataTarefaInicioPesquisa('');
-      setDataTarefaFinalPesquisa('');
-      setChecked([]);
-      setMesSelected(0);
-      setTituloPesquisa('');
-        
-    }).catch((err) => {
-      console.error("Ops! ocorreu um erro" + err);
-      toast.error("Operação não realizada!");
-    });
+      // VERIFICA SE O CAMPO DE DATA NÃO ESTIVER VAZIO PARA FAZER A CONSULTA
+      if(dataTarefaPesquisa !== '') {
+        let pesquisa = tarefas.filter((tarefa) => tarefa.data === dataTarefaPesquisa);
+        setTarefas(pesquisa);
+      }
+
+      // VERIFICA SE O CAMPO DE TITULO NÃO ESTIVER VAZIO PARA FAZER A CONSULTA
+      if(tituloPesquisa !== '') {
+        // let pesquisa = tarefas.filter((tarefa) => tarefa.titulo === tituloPesquisa);
+        let pesquisa = tarefas.filter((tarefa) => tarefa.titulo.includes(tituloPesquisa));
+        setTarefas(pesquisa);
+      }
+
+      // VERIFICA SE O CAMPO DE DATA INICIO E DATA FIM NÃO ESTIVER VAZIO PARA FAZER A CONSULTA
+      if(dataTarefaInicioPesquisa !== '' && dataTarefaFinalPesquisa){
+
+        let pesquisa = tarefas.filter((tarefa) => {
+           return tarefa.data >= dataTarefaInicioPesquisa &&
+            tarefa.data <= dataTarefaFinalPesquisa;
+        });
+
+        setTarefas(pesquisa);
+      }
+
+      // VERIFICA SE O CAMPO MES NÃO ESTIVER VAZIO PARA FAZER A CONSULTA
+      if(mesSelected !== 0){
+        let pesquisa = tarefas.filter((tarefa) => tarefa.data.indexOf(mesSelected) !== -1)
+        setTarefas(pesquisa);
+      }
+
+    } else {
+      // ALTERA OS DADOS DO USUÁRIO
+      await api.post(`/tarefas-consulta/`,{
+        titulo: tituloPesquisa ? tituloPesquisa : '',
+        data: dataTarefaPesquisa ? dataTarefaPesquisa : '',
+        data_tarefa_inicio: dataTarefaInicioPesquisa ? dataTarefaInicioPesquisa : '',
+        data_tarefa_final: dataTarefaFinalPesquisa ? dataTarefaFinalPesquisa : '',
+        tag_id: checked ? checked : '',
+        mes: mesSelected ? mesSelected : ''
+      },
+      config
+      ).then((response) =>{
+        let tarefasReq = response.data.data;
+
+        // VOLTA OS CAMPOS PARA OS VALORES INICIAIS
+        setTarefas(tarefasReq);
+      }).catch((err) => {
+        console.error("Ops! ocorreu um erro" + err);
+        toast.error("Operação não realizada!");
+      });
+    }
   }
 
   // FUNÇÃO PARA PEGAR O ID DA TAG
@@ -522,20 +567,25 @@ export default function Tarefas(){
     setSelectedOption(event.target.value)
   }
 
-  if(loading){
-    return(
-      <div>
-        <Header/>
-        <div className="content">
-          <Title name="Tarefas">
-            <FiUser size={25}/>
-          </Title>
-          <div className="container dashboard">
-            <Loader/>
-          </div>
-        </div>
-      </div>
-    )
+  // FUNÇÃO PARA MOSTRAR FERIADO NA PESQUISA(CONSULTA)
+  function showFeriado(){
+    setCheckFeriado(!checkFeriado)
+  }
+
+  // FUNÇÃO DE RECARREGAR O DATA TABLE
+  function handleReload(){
+    window.location.reload();
+  }
+
+  // FUNÇÃO DE LIMPAR OS CAMPOS DE PESQUISA
+  function handleClear(){
+    setTituloPesquisa('');
+    setDataTarefaPesquisa('');
+    setDataTarefaInicioPesquisa('');
+    setDataTarefaFinalPesquisa('');
+    setMesSelected(0); 
+    setChecked([]);
+    setCheckFeriado(!checkFeriado);
   }
 
   return(
@@ -642,6 +692,7 @@ export default function Tarefas(){
                 </select>
               </>
             )}
+            <input type="checkbox" onChange={showFeriado}/> Mostrar Feriado
           </div>
           
           <br/>
@@ -663,23 +714,43 @@ export default function Tarefas(){
               )
             })}
           </div>
+           
+          <div className="align-buttons">
+            <button style={{ marginRight: '10px'}} className="btn-search" onClick={handlePesquisar}>
+              <FiSearch color="#FFF" size={20}/>
+              Pesquisar
+            </button>
 
-          <button style={{ marginRight: '10px'}}className="btn-search" onClick={handlePesquisar}>
-            <FiSearch color="#FFF" size={20}/>
-            Pesquisar
-          </button>
+            <button style={{ marginRight: '10px'}} className="btn-clear" onClick={handleClear}>
+              <FaBroom color="#rgba(4, 59, 92, 1)" size={20}/>
+              Limpar
+            </button>
+            
+            <button style={{ marginRight: '10px'}} className="btn-reload" onClick={handleReload}>
+              <FaRedo color="#rgba(4, 59, 92, 1)" size={20}/>
+              Recarregar
+            </button>
+          </div>
+          
         </div>
+
+        
         {/* FIM DA DIV DE PESQUISA */}
 
         <div className="buttons-header">
           <button onClick={ toggleModal }  className="btn-new">
-            <FiPlus color="#FFF" size={25}/>
+            <FiPlus color="#FFF" size={20}/>
             Adicionar nova Tarefa
           </button>
         </div>
-        <>
+        {loading ? (
+          <div className="resultado">
+            <Loader/>
+          </div>
+        ) : (
+          <>
           { tarefas.length === 0 ? (
-            <div className="container dashboard">
+            <div className="resultado">
               <span>Nenhuma tarefa encontrada.</span>
             </div>
           ) : (
@@ -694,7 +765,10 @@ export default function Tarefas(){
               />  
             </>
           )}
-        </>
+          </>
+        )}
+
+        
       </div>
 
       {modal &&
